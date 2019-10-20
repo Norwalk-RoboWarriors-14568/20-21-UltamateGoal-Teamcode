@@ -185,6 +185,7 @@ public class TeleOp_MecanumDemo extends OpMode {
         else {//if its not really moving, just set it to 0 to avoid inching along
             motorActuator.setPower(0.0);
         }
+
 //end of loop opmode programing
     }
 
