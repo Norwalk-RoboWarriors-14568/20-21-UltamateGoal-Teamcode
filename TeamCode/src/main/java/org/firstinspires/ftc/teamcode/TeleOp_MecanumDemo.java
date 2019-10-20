@@ -54,11 +54,10 @@ import static java.lang.Math.abs;
 public class TeleOp_MecanumDemo extends OpMode {
 
 
-//*********** Experimental          Mecanums only
 //*********** Rev Hub count: 2
 
 
-    //TETRIX Motors		-recording the motor type as if this file ran autonomous
+    //GOBUILDA(?) MOTORS -recording the motor type as if this file ran autonomous
 
     private DcMotor motorLeft, motorLeft2,
                     motorRight, motorRight2,
@@ -129,6 +128,14 @@ public class TeleOp_MecanumDemo extends OpMode {
             mecanunDriveMode = false;
         }
 
+        if (gamepad1.left_bumper) {
+            driveSpeed = FAST_SPEED;
+        } else if (gamepad1.right_bumper) {
+            driveSpeed = SLOW_SPEED;
+        } else {
+            driveSpeed = MED_SPEED;
+        }
+
         if (mecanunDriveMode) {     //when enabled, motors will only hit 100% when strafing and driving
 
             //if the stick is > 0 it means that the left stick is further (because it is left - right)
@@ -138,31 +145,17 @@ public class TeleOp_MecanumDemo extends OpMode {
                 mecanumStrafe = gamepad1.right_stick_x;
             }
 
-            if (gamepad1.left_bumper) {
-                driveSpeed = FAST_SPEED;
-            } else if (gamepad1.right_bumper) {
-                driveSpeed = SLOW_SPEED;
-            } else {
-                driveSpeed = MED_SPEED;
-            }
 
                 motorLeft.setPower((gamepad1.left_stick_y + -mecanumStrafe) / 2 * driveSpeed);
                 motorLeft2.setPower((gamepad1.left_stick_y + mecanumStrafe) / 2 * driveSpeed);
                 motorRight.setPower((gamepad1.right_stick_y + mecanumStrafe) / 2 * driveSpeed);
                 motorRight2.setPower((gamepad1.right_stick_y + -mecanumStrafe) / 2 * driveSpeed);
 
-
-
-
+        //if there is not a mechanum drive mode active
         } else {
-            if (gamepad1.left_bumper) {
-                drive(gamepad1.left_stick_y, gamepad1.right_stick_y);
-            } else if (gamepad1.right_bumper) {
-                drive(gamepad1.left_stick_y * 0.5, gamepad1.right_stick_y * 0.5);
-            } else {
-                drive(gamepad1.left_stick_y * 0.75, gamepad1.right_stick_y * 0.75);
-            }
+            drive(gamepad1.left_stick_y * driveSpeed, gamepad1.right_stick_y * driveSpeed);
         }
+
 
         //button code to manipulate other code/robot
         if (gamepad1.x) {
