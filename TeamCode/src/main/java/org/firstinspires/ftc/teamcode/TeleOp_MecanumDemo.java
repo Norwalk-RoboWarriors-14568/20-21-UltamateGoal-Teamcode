@@ -178,7 +178,13 @@ public class TeleOp_MecanumDemo extends OpMode {
 
 //gamepad2
 
-
+        //if the gamepad is outside of the
+        if( abs(gamepad2.left_stick_y) > 0.1){
+            motorActuator.setPower(gamepad2.left_stick_y);
+        }
+        else {//if its not really moving, just set it to 0 to avoid inching along
+            motorActuator.setPower(0.0);
+        }
 //end of loop opmode programing
     }
 
