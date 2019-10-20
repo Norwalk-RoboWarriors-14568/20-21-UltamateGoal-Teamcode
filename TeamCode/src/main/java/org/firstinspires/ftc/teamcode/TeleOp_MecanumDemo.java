@@ -61,10 +61,17 @@ public class TeleOp_MecanumDemo extends OpMode {
     //TETRIX Motors		-recording the motor type as if this file ran autonomous
 
     private DcMotor motorLeft, motorLeft2,
-            motorRight, motorRight2;
+                    motorRight, motorRight2,
+                    motorActuator;
 
+    //constants(to avoid magic numbers)
+    private final float SLOW_SPEED = 0.5f;
+    private final float MED_SPEED = 0.75f;
+    private final float FAST_SPEED = 1.0f;
+    //Boolean to
     private boolean mecanunDriveMode = true, coastMotors = true;
     private float mecanumStrafe = 0, dominantXJoystick = 0;
+    private float driveSpeed = MED_SPEED;//the speed that robot should be driven at, changed based on buttons presed
 
 
     /*
@@ -80,6 +87,8 @@ public class TeleOp_MecanumDemo extends OpMode {
         motorRight = hardwareMap.dcMotor.get("motor_2");
         motorLeft2 = hardwareMap.dcMotor.get("motor_3");
         motorRight2 = hardwareMap.dcMotor.get("motor_4");
+        motorActuator = hardwareMap.dcMotor.get("motor_actuator");
+
 
         //so you don't have to wire red to black, to maintain program logic
         motorRight.setDirection(DcMotor.Direction.REVERSE);
@@ -110,6 +119,8 @@ public class TeleOp_MecanumDemo extends OpMode {
         //allows for 3-speed joystick control
 
 
+        //if the left or right stick is reasonably outside the dead-zone, find the dominant
+        //joystick
         if (abs(gamepad1.left_stick_x) > 0.1 || abs(gamepad1.right_stick_x) > 0.1) {
             //removes negatives from joystick values, to set variable to +/- for determing stick farther from zero
             dominantXJoystick = (abs(gamepad1.left_stick_x) - abs(gamepad1.right_stick_x));
@@ -120,6 +131,7 @@ public class TeleOp_MecanumDemo extends OpMode {
 
         if (mecanunDriveMode) {     //when enabled, motors will only hit 100% when strafing and driving
 
+            //if the stick is > 0 it means that the left stick is further (because it is left - right)
             if (dominantXJoystick > 0) {
                 mecanumStrafe = gamepad1.left_stick_x;
             } else if (dominantXJoystick < 0) {
@@ -127,22 +139,22 @@ public class TeleOp_MecanumDemo extends OpMode {
             }
 
             if (gamepad1.left_bumper) {
-                motorLeft.setPower((gamepad1.left_stick_y + -mecanumStrafe) / 2);
-                motorLeft2.setPower((gamepad1.left_stick_y + mecanumStrafe) / 2);
-                motorRight.setPower((gamepad1.right_stick_y + mecanumStrafe) / 2);
-                motorRight2.setPower((gamepad1.right_stick_y + -mecanumStrafe) / 2);
+                driveSpeed = FAST_SPEED;
             } else if (gamepad1.right_bumper) {
-                motorLeft.setPower((gamepad1.left_stick_y + -mecanumStrafe) / 2 * 0.5);
-                motorLeft2.setPower((gamepad1.left_stick_y + mecanumStrafe) / 2 * 0.5);
-                motorRight.setPower((gamepad1.right_stick_y + mecanumStrafe) / 2 * 0.5);
-                motorRight2.setPower((gamepad1.right_stick_y + -mecanumStrafe) / 2 * 0.5);
+                driveSpeed = SLOW_SPEED;
             } else {
-                motorLeft.setPower((gamepad1.left_stick_y + -mecanumStrafe) / 2 * 0.75);
-                motorLeft2.setPower((gamepad1.left_stick_y + mecanumStrafe) / 2 * 0.75);
-                motorRight.setPower((gamepad1.right_stick_y + mecanumStrafe) / 2 * 0.75);
-                motorRight2.setPower((gamepad1.right_stick_y + -mecanumStrafe) / 2 * 0.75);
+                driveSpeed = MED_SPEED;
             }
-        } else if (!mecanunDriveMode) {
+
+                motorLeft.setPower((gamepad1.left_stick_y + -mecanumStrafe) / 2 * driveSpeed);
+                motorLeft2.setPower((gamepad1.left_stick_y + mecanumStrafe) / 2 * driveSpeed);
+                motorRight.setPower((gamepad1.right_stick_y + mecanumStrafe) / 2 * driveSpeed);
+                motorRight2.setPower((gamepad1.right_stick_y + -mecanumStrafe) / 2 * driveSpeed);
+
+
+
+
+        } else {
             if (gamepad1.left_bumper) {
                 drive(gamepad1.left_stick_y, gamepad1.right_stick_y);
             } else if (gamepad1.right_bumper) {
